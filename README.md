@@ -116,6 +116,8 @@ kubectl port-forward -n login-system service/frontend-service 8080:80
 │   ├── install-k8s-cn.sh   # K8s 安装 (国内镜像)
 │   ├── deploy.sh           # 一键部署
 │   ├── cleanup.sh          # 清理脚本
+│   ├── backup.sh           # 数据备份
+│   ├── restore.sh          # 数据恢复
 │   └── setup-windows-access.sh  # Windows 访问配置
 │
 ├── 部署指南.md              # 👈 主要部署文档
