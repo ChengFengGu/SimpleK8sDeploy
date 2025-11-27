@@ -3,14 +3,20 @@
 # ============================================
 FROM node:18-alpine AS builder
 
+# 使用阿里云镜像源加速
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 # 设置工作目录
 WORKDIR /app
 
 # 复制依赖文件
 COPY package*.json ./
 
-# 安装依赖（生产环境）
-RUN npm ci --only=production
+# 使用淘宝 npm 镜像源加速
+RUN npm config set registry https://registry.npmmirror.com
+
+# 安装所有依赖（构建阶段需要 devDependencies 中的 vite）
+RUN npm ci
 
 # 复制源代码
 COPY . .
@@ -22,6 +28,9 @@ RUN npm run build
 # 阶段 2: 运行阶段 - Nginx 服务静态文件
 # ============================================
 FROM nginx:alpine
+
+# 使用阿里云镜像源加速
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # 维护者信息
 LABEL maintainer="your-email@example.com"

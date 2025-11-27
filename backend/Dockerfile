@@ -6,6 +6,9 @@ FROM python:3.11-alpine AS builder
 # 设置工作目录
 WORKDIR /app
 
+# 使用阿里云镜像源加速
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 # 安装系统依赖
 RUN apk add --no-cache \
     postgresql-dev \
@@ -17,9 +20,9 @@ RUN apk add --no-cache \
 # 复制依赖文件
 COPY requirements.txt .
 
-# 安装 Python 依赖
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# 使用阿里云 PyPI 镜像源加速
+RUN pip install --no-cache-dir --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/ && \
+    pip install --no-cache-dir -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 
 # ============================================
 # 阶段 2: 运行阶段
@@ -30,6 +33,9 @@ FROM python:3.11-alpine
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1
+
+# 使用阿里云镜像源加速
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # 安装运行时依赖
 RUN apk add --no-cache \

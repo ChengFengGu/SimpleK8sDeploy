@@ -46,13 +46,11 @@ export default defineConfig({
       }
     },
     
-    // 压缩配置
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true, // 生产环境移除 console
-        drop_debugger: true
-      }
+    // 压缩配置（使用 esbuild，速度更快且无需额外依赖）
+    minify: 'esbuild',
+    // esbuild 配置
+    esbuild: {
+      drop: ['console', 'debugger'] // 生产环境移除 console 和 debugger
     }
   }
 })
