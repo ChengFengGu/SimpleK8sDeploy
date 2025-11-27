@@ -51,7 +51,7 @@
 
 ```bash
 # 1. 克隆项目
-git clone <your-repo>
+git clone https://github.com/ChengFengGu/SimpleK8sDeploy.git
 cd 01-k8s
 
 # 2. 配置 Docker 环境
