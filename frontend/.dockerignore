@@ -1,0 +1,47 @@
+# 依赖
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 构建产物
+dist/
+dist-ssr/
+*.local
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# 环境变量（不应包含在镜像中）
+.env
+.env.local
+.env.*.local
+
+# 测试
+coverage/
+*.test.js
+*.spec.js
+
+# Git
+.git/
+.gitignore
+
+# 文档
+README.md
+CHANGELOG.md
+docs/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# 其他
+*.log
+.cache/
+
