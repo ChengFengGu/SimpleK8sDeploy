@@ -64,18 +64,43 @@ Kubernetes（简称 K8s）是一个开源的容器编排平台，最初由 Googl
 
 ### 2.2 技术栈选择
 
-#### 前端
-- **框架**：React / Vue.js（静态文件）
+#### 前端（Vue3 生态）
+- **框架**：Vue 3（Composition API）
+  - 响应式系统优化
+  - 更好的 TypeScript 支持
+  - Composition API 更灵活的代码组织
+- **构建工具**：Vite
+  - 极速的冷启动
+  - 即时热模块替换（HMR）
+  - 优化的生产构建
+- **路由**：Vue Router 4
+  - SPA 路由管理
+  - 路由守卫（认证拦截）
+  - History 模式
+- **HTTP 客户端**：Axios
+  - 请求/响应拦截器
+  - 自动 Token 注入
+  - 错误统一处理
+- **状态管理**：Pinia（可选）
+  - 轻量级状态管理
+  - 更好的 DevTools 支持
 - **Web 服务器**：Nginx
-- **容器**：基于 `nginx:alpine` 镜像
+  - 静态文件服务
+  - SPA 路由支持
+  - API 反向代理
+- **容器**：多阶段构建（node:18-alpine + nginx:alpine）
+  - 构建阶段：编译 Vue 应用
+  - 运行阶段：Nginx 服务静态文件
 
 #### 后端
-- **语言**：Node.js (Express) 
+- **框架**：Python Django + Django REST Framework (DRF)
 - **功能**：
-  - 用户登录 API
-  - JWT Token 生成和验证
-  - 密码加密（bcrypt）
-- **容器**：基于 `node:18-alpine` 镜像
+  - RESTful API 接口
+  - 用户登录/注册 API
+  - JWT Token 生成和验证（djangorestframework-simplejwt）
+  - 密码加密（Django 内置）
+  - ORM 数据库操作
+- **容器**：基于 `python:3.11-alpine` 镜像
 
 #### 数据库
 - **数据库**：PostgreSQL
@@ -98,20 +123,36 @@ Kubernetes（简称 K8s）是一个开源的容器编排平台，最初由 Googl
 frontend/
 ├── Dockerfile
 ├── nginx.conf
+├── package.json
+├── vite.config.js
+├── index.html
 └── src/
-    ├── index.html
-    ├── login.html
-    ├── css/
-    │   └── style.css
-    └── js/
-        └── app.js
+    ├── main.js
+    ├── App.vue
+    ├── router/
+    │   └── index.js
+    ├── views/
+    │   ├── Login.vue
+    │   ├── Register.vue
+    │   └── Home.vue
+    ├── api/
+    │   └── auth.js
+    └── utils/
+        ├── request.js
+        └── auth.js
 ```
 
-**Dockerfile 说明**：
-- 使用 Nginx 作为 Web 服务器
-- 将静态文件复制到容器中
-- 配置反向代理到后端服务
-- 暴露 80 端口
+**Dockerfile 说明**（多阶段构建）：
+- **阶段 1 - 构建阶段**：
+  - 基于 `node:18-alpine`
+  - 安装 npm 依赖
+  - 执行 `npm run build` 构建 Vue3 应用
+  - 生成优化后的静态文件到 `dist/` 目录
+- **阶段 2 - 运行阶段**：
+  - 基于 `nginx:alpine`
+  - 从构建阶段复制 `dist/` 目录
+  - 配置 Nginx（SPA 路由支持 + API 反向代理）
+  - 暴露 80 端口
 
 ### 3.2 后端 Docker 镜像
 
@@ -119,23 +160,28 @@ frontend/
 ```
 backend/
 ├── Dockerfile
-├── package.json
-└── src/
-    ├── server.js
-    ├── routes/
-    │   └── auth.js
-    ├── models/
-    │   └── user.js
-    └── middleware/
-        └── auth.js
+├── requirements.txt
+├── manage.py
+├── config/
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+└── apps/
+    └── authentication/
+        ├── models.py
+        ├── serializers.py
+        ├── views.py
+        └── urls.py
 ```
 
 **Dockerfile 说明**：
-- 基于 Node.js 18
-- 安装依赖包（express, pg, bcrypt, jsonwebtoken）
+- 基于 Python 3.11 Alpine
+- 安装系统依赖（PostgreSQL 开发库）
+- 安装 Python 依赖（Django, DRF, psycopg2, djangorestframework-simplejwt）
 - 复制应用代码
-- 暴露 3000 端口
-- 启动 Express 服务器
+- 数据库迁移准备
+- 暴露 8000 端口
+- 使用 Gunicorn 作为 WSGI 服务器
 
 ### 3.3 数据库 Docker 镜像
 
@@ -201,7 +247,7 @@ backend/
 4. **Service**：后端服务入口
    - `backend-service.yaml`
    - ClusterIP 类型
-   - 端口：3000
+   - 端口：8000
 
 ### 4.4 前端层（Nginx）
 
@@ -267,19 +313,29 @@ backend/
 
 1. **用户注册**
    - 输入用户名、邮箱、密码
-   - 前端验证（格式检查）
+   - 前端响应式验证（Vue3 响应式系统）
+   - 实时表单验证反馈
    - 后端密码加密存储
 
 2. **用户登录**
    - 输入用户名和密码
+   - 前端表单验证
    - 后端验证凭据
-   - 返回 JWT Token
+   - 返回 JWT Token（access + refresh）
    - 前端存储 Token 到 localStorage
+   - 使用 Vue Router 导航
 
 3. **Token 验证**
-   - 受保护的页面需要 Token
+   - 受保护的路由需要 Token（Vue Router 守卫）
+   - Axios 拦截器自动添加 Token
    - 后端中间件验证 Token
-   - Token 过期自动跳转登录页
+   - Token 过期自动刷新或跳转登录页
+
+4. **SPA 特性**
+   - 单页应用，无刷新切换
+   - 前端路由（Vue Router History 模式）
+   - 组件化开发
+   - 响应式数据绑定
 
 ### 5.2 K8s 特性应用
 
@@ -327,9 +383,9 @@ backend/
    ↓
 7. Ingress 将 /api 请求路由到后端 Service
    ↓
-8. 后端 Service 将请求转发到 Node.js Pod
+8. 后端 Service 将请求转发到 Django Pod
    ↓
-9. Node.js 查询 PostgreSQL Service
+9. Django 通过 ORM 查询 PostgreSQL Service
    ↓
 10. PostgreSQL Service 转发到数据库 Pod
    ↓
@@ -343,7 +399,7 @@ backend/
 ### 6.2 Service 发现机制
 
 K8s 内部通过 DNS 自动服务发现：
-- 前端访问后端：`http://backend-service:3000`
+- 前端访问后端：`http://backend-service:8000`
 - 后端访问数据库：`postgresql://postgres-service:5432/logindb`
 
 ---
@@ -469,27 +525,46 @@ login-system/
 ├── frontend/
 │   ├── Dockerfile
 │   ├── nginx.conf
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── index.html
 │   └── src/
-│       ├── index.html
-│       ├── login.html
-│       ├── register.html
-│       ├── css/
-│       │   └── style.css
-│       └── js/
-│           └── app.js
+│       ├── main.js
+│       ├── App.vue
+│       ├── router/
+│       │   └── index.js
+│       ├── views/
+│       │   ├── Login.vue
+│       │   ├── Register.vue
+│       │   └── Home.vue
+│       ├── components/
+│       │   ├── LoginForm.vue
+│       │   └── Navbar.vue
+│       ├── api/
+│       │   └── auth.js
+│       ├── utils/
+│       │   ├── request.js
+│       │   └── auth.js
+│       └── assets/
+│           └── styles/
+│               └── main.css
 ├── backend/
 │   ├── Dockerfile
-│   ├── package.json
-│   └── src/
-│       ├── server.js
-│       ├── config/
-│       │   └── database.js
-│       ├── routes/
-│       │   └── auth.js
-│       ├── models/
-│       │   └── user.js
-│       └── middleware/
-│           └── auth.js
+│   ├── requirements.txt
+│   ├── manage.py
+│   ├── config/
+│   │   ├── __init__.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   └── apps/
+│       └── authentication/
+│           ├── __init__.py
+│           ├── models.py
+│           ├── serializers.py
+│           ├── views.py
+│           ├── urls.py
+│           └── middleware.py
 ├── database/
 │   └── init.sql
 ├── k8s/
@@ -959,7 +1034,7 @@ spec:
           service:
             name: backend-service
             port:
-              number: 3000
+              number: 8000
   
   # www 子域名 - 前端
   - host: www.login.local
@@ -983,7 +1058,7 @@ spec:
           service:
             name: backend-service
             port:
-              number: 3000
+              number: 8000
   
   # tls:
   # - hosts:
