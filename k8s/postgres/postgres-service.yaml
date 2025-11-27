@@ -1,6 +1,7 @@
 # ============================================
 # PostgreSQL Service
 # 数据库服务（仅集群内部访问）
+# Database service (internal cluster access only)
 # ============================================
 apiVersion: v1
 kind: Service
@@ -11,7 +12,7 @@ metadata:
     app: postgres
     tier: database
 spec:
-  type: ClusterIP  # 仅集群内部访问
+  type: ClusterIP  # 仅集群内部访问 / Internal cluster access only
   selector:
     app: postgres
     tier: database
@@ -21,4 +22,3 @@ spec:
     targetPort: 5432
     protocol: TCP
   sessionAffinity: None
-

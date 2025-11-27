@@ -1,6 +1,7 @@
 # ============================================
-# Ingress 配置
+# Ingress 配置 / Ingress Configuration
 # 统一入口和路由规则（需要先安装 Ingress Controller）
+# Unified entry and routing rules (Ingress Controller required)
 # ============================================
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -10,13 +11,13 @@ metadata:
   labels:
     app: login-system
   annotations:
-    # Nginx Ingress Controller 注解
+    # Nginx Ingress Controller 注解 / Nginx Ingress Controller annotations
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
 spec:
   ingressClassName: nginx
   rules:
-  # 主域名 - 前端
+  # 主域名 - 前端 / Main domain - Frontend
   - host: login.local
     http:
       paths:
@@ -35,7 +36,7 @@ spec:
             port:
               number: 8000
   
-  # www 子域名 - 前端
+  # www 子域名 - 前端 / www subdomain - Frontend
   - host: www.login.local
     http:
       paths:
@@ -47,7 +48,7 @@ spec:
             port:
               number: 80
   
-  # API 子域名 - 后端
+  # API 子域名 - 后端 / API subdomain - Backend
   - host: api.login.local
     http:
       paths:
@@ -59,11 +60,10 @@ spec:
             port:
               number: 8000
   
-  # 可选：配置 TLS
+  # 可选：配置 TLS / Optional: Configure TLS
   # tls:
   # - hosts:
   #   - login.local
   #   - www.login.local
   #   - api.login.local
   #   secretName: login-local-tls
-

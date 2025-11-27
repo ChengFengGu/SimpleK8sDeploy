@@ -1,6 +1,7 @@
 # ============================================
 # Backend Service
 # 后端服务（集群内部访问）
+# Backend service (internal cluster access)
 # ============================================
 apiVersion: v1
 kind: Service
@@ -21,4 +22,3 @@ spec:
     targetPort: 8000
     protocol: TCP
   sessionAffinity: None
-

@@ -1,6 +1,6 @@
 # ============================================
 # PostgreSQL PersistentVolumeClaim
-# 持久化存储声明
+# 持久化存储声明 / Persistent storage claim
 # ============================================
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -17,4 +17,3 @@ spec:
   resources:
     requests:
       storage: 5Gi
-

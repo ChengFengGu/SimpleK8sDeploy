@@ -1,6 +1,6 @@
 # ============================================
 # Frontend ConfigMap
-# 存储前端 Nginx 配置
+# 存储前端 Nginx 配置 / Store frontend Nginx configuration
 # ============================================
 apiVersion: v1
 kind: ConfigMap
@@ -11,7 +11,7 @@ metadata:
     app: frontend
     tier: frontend
 data:
-  # Nginx 配置文件
+  # Nginx 配置文件 / Nginx configuration file
   nginx.conf: |
     server {
         listen 80;
@@ -19,10 +19,10 @@ data:
         root /usr/share/nginx/html;
         index index.html;
 
-        # 字符集
+        # 字符集 / Charset
         charset utf-8;
 
-        # Gzip 压缩
+        # Gzip 压缩 / Gzip compression
         gzip on;
         gzip_vary on;
         gzip_min_length 1024;
@@ -32,14 +32,14 @@ data:
                    application/javascript application/json
                    image/svg+xml;
 
-        # 静态资源缓存
+        # 静态资源缓存 / Static resource caching
         location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
             expires 1y;
             add_header Cache-Control "public, immutable";
             access_log off;
         }
 
-        # API 反向代理到后端服务
+        # API 反向代理到后端服务 / API reverse proxy to backend service
         location /api/ {
             proxy_pass http://backend-service:8000;
             
@@ -56,26 +56,25 @@ data:
             proxy_cache off;
         }
 
-        # Vue Router History 模式支持
+        # Vue Router History 模式支持 / Vue Router History mode support
         location / {
             try_files $uri $uri/ /index.html;
             add_header Cache-Control "no-cache, no-store, must-revalidate";
         }
 
-        # 禁止访问隐藏文件
+        # 禁止访问隐藏文件 / Deny access to hidden files
         location ~ /\. {
             deny all;
             access_log off;
             log_not_found off;
         }
 
-        # 404 错误处理
+        # 404 错误处理 / 404 error handling
         error_page 404 /index.html;
 
-        # 50x 错误处理
+        # 50x 错误处理 / 50x error handling
         error_page 500 502 503 504 /50x.html;
         location = /50x.html {
             root /usr/share/nginx/html;
         }
     }
-

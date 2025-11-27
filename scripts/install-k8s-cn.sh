@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================
-# K8s 安装脚本 - 使用国内镜像源
-# 适用于中国大陆网络环境
+# K8s Installation Script - Using China Mirrors
+# Optimized for mainland China network environment
 # ============================================
 
 set -e
@@ -30,101 +30,101 @@ print_step() {
     echo -e "${BLUE}========================================${NC}"
 }
 
-print_step "K8s 环境安装（使用国内镜像）"
+print_step "K8s Environment Installation (Using China Mirrors)"
 
 # ============================================
-# 0. 检查 Docker
+# Step 0: Check Docker
 # ============================================
-print_step "步骤 0: 检查环境"
+print_step "Step 0: Check Environment"
 
 if ! command -v docker &> /dev/null; then
-    print_error "Docker 未安装，请先安装 Docker"
+    print_error "Docker is not installed. Please install Docker first"
     exit 1
 fi
 
-print_info "✅ Docker 已安装: $(docker --version)"
+print_info "✅ Docker installed: $(docker --version)"
 
 # ============================================
-# 1. 检查 Minikube
+# Step 1: Check Minikube
 # ============================================
-print_step "步骤 1: 检查 Minikube"
+print_step "Step 1: Check Minikube"
 
 if command -v minikube &> /dev/null; then
-    print_info "✅ Minikube 已安装: $(minikube version --short)"
+    print_info "✅ Minikube installed: $(minikube version --short)"
 else
-    print_error "Minikube 未安装，请先安装 Minikube"
-    print_info "安装命令："
+    print_error "Minikube is not installed. Please install Minikube first"
+    print_info "Installation command:"
     print_info "  curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64"
     print_info "  sudo install minikube-linux-amd64 /usr/local/bin/minikube"
     exit 1
 fi
 
 if command -v kubectl &> /dev/null; then
-    print_info "✅ kubectl 已安装: $(kubectl version --client --short 2>/dev/null || kubectl version --client)"
+    print_info "✅ kubectl installed: $(kubectl version --client --short 2>/dev/null || kubectl version --client)"
 else
-    print_warn "kubectl 未安装，将由 minikube 自动配置"
+    print_warn "kubectl not installed, will be configured by minikube automatically"
 fi
 
 # ============================================
-# 2. 清理旧环境
+# Step 2: Clean up old environment
 # ============================================
-print_step "步骤 2: 清理旧环境"
+print_step "Step 2: Clean up old environment"
 
-print_info "停止并删除旧的 Minikube 集群..."
+print_info "Stopping and deleting old Minikube cluster..."
 minikube delete --all || true
 rm -rf ~/.minikube ~/.kube
-print_info "✅ 清理完成"
+print_info "✅ Cleanup completed"
 
 # ============================================
-# 3. 启动 Minikube（使用国内镜像）
+# Step 3: Start Minikube (Using China Mirrors)
 # ============================================
-print_step "步骤 3: 启动 Minikube 集群"
+print_step "Step 3: Start Minikube Cluster"
 
-print_info "使用阿里云镜像仓库启动 Minikube..."
-print_info "Minikube 版本: $(minikube version --short)"
+print_info "Starting Minikube with Aliyun mirror..."
+print_info "Minikube version: $(minikube version --short)"
 
 # ============================================
-# 3.1 预先拉取 kicbase 基础镜像（从阿里云）
+# Step 3.1: Pre-pull kicbase image (from Aliyun)
 # ============================================
-print_info "正在从阿里云拉取 kicbase 基础镜像..."
+print_info "Pulling kicbase image from Aliyun..."
 KICBASE_VERSION="v0.0.48"
 
-# 从阿里云拉取镜像
+# Pull image from Aliyun
 if docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/kicbase:${KICBASE_VERSION}; then
-    print_info "✅ 基础镜像下载完成"
+    print_info "✅ Base image downloaded"
     
-    # 给镜像打标签，让 minikube 使用本地镜像
-    print_info "正在重新标记镜像..."
+    # Retag image for minikube to use local image
+    print_info "Retagging image..."
     docker tag registry.cn-hangzhou.aliyuncs.com/google_containers/kicbase:${KICBASE_VERSION} \
         gcr.io/k8s-minikube/kicbase:${KICBASE_VERSION}
     docker tag registry.cn-hangzhou.aliyuncs.com/google_containers/kicbase:${KICBASE_VERSION} \
         kicbase/stable:${KICBASE_VERSION}
-    print_info "✅ 镜像标记完成"
+    print_info "✅ Image tagging completed"
 else
-    print_warn "从阿里云拉取镜像失败，将尝试从官方源拉取（可能较慢）"
+    print_warn "Failed to pull from Aliyun, will try official source (may be slow)"
 fi
 
 # ============================================
-# 3.2 启动 Minikube 集群
+# Step 3.2: Start Minikube Cluster
 # ============================================
-print_info "正在启动 Minikube 集群..."
-print_info "这可能需要 5-10 分钟，请耐心等待..."
+print_info "Starting Minikube cluster..."
+print_info "This may take 5-10 minutes, please be patient..."
 
-# 使用混合镜像策略：
-# 1. 容器镜像: 使用阿里云镜像仓库（快）
-# 2. 二进制文件: 通过代理从 Google 官方下载
+# Hybrid mirror strategy:
+# 1. Container images: Use Aliyun registry (fast)
+# 2. Binaries: Download from Google official via proxy
 # 
-# 问题：--image-repository 会同时影响容器镜像和二进制文件的下载源
-# 解决：通过代理全部从 Google 官方下载，速度应该可以接受
-print_info "配置下载策略：通过代理从 Google 官方源下载..."
+# Issue: --image-repository affects both container images and binaries
+# Solution: Download everything from Google official via proxy
+print_info "Configuring download strategy: Download from Google official via proxy..."
 
-# 导出环境变量，让 minikube 使用代理
+# Export environment variables for minikube to use proxy
 export HTTP_PROXY=http://172.19.160.1:8093
 export HTTPS_PROXY=http://172.19.160.1:8093  
 export NO_PROXY=localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,registry.cn-hangzhou.aliyuncs.com
 
-# 不使用 --image-repository，让所有内容通过代理从官方源下载
-# 这样可以确保获取最新版本，并且避免阿里云镜像同步延迟问题
+# Don't use --image-repository, let everything download from official source via proxy
+# This ensures getting the latest version and avoids Aliyun mirror sync delays
 minikube start \
     --driver=docker \
     --cpus=2 \
@@ -133,74 +133,74 @@ minikube start \
     --force \
     --base-image=gcr.io/k8s-minikube/kicbase:${KICBASE_VERSION}
 
-# 清理代理环境变量
+# Clean up proxy environment variables
 unset HTTP_PROXY HTTPS_PROXY NO_PROXY
 
-print_info "✅ Minikube 启动完成"
+print_info "✅ Minikube started successfully"
 
 # ============================================
-# 4. 配置 kubectl
+# Step 4: Configure kubectl
 # ============================================
-print_step "步骤 4: 配置 kubectl"
+print_step "Step 4: Configure kubectl"
 
 kubectl config use-context minikube
-print_info "✅ kubectl 配置完成"
+print_info "✅ kubectl configured"
 
-# 验证集群
-print_info "验证集群状态..."
+# Verify cluster
+print_info "Verifying cluster status..."
 kubectl cluster-info
 kubectl get nodes
 
 # ============================================
-# 5. 安装 Nginx Ingress Controller
+# Step 5: Install Nginx Ingress Controller
 # ============================================
-print_step "步骤 5: 安装 Nginx Ingress Controller"
+print_step "Step 5: Install Nginx Ingress Controller"
 
-print_info "启用 Ingress 插件..."
+print_info "Enabling Ingress addon..."
 minikube addons enable ingress
 
-print_info "等待 Ingress Controller 就绪（最多 120 秒）..."
+print_info "Waiting for Ingress Controller to be ready (max 120 seconds)..."
 kubectl wait --namespace ingress-nginx \
   --for=condition=ready pod \
   --selector=app.kubernetes.io/component=controller \
   --timeout=120s
 
-print_info "✅ Ingress Controller 安装完成"
+print_info "✅ Ingress Controller installed"
 
 # ============================================
-# 6. 安装 Metrics Server
+# Step 6: Install Metrics Server
 # ============================================
-print_step "步骤 6: 安装 Metrics Server"
+print_step "Step 6: Install Metrics Server"
 
-print_info "启用 Metrics Server 插件..."
+print_info "Enabling Metrics Server addon..."
 minikube addons enable metrics-server
 
-print_info "✅ Metrics Server 安装完成"
+print_info "✅ Metrics Server installed"
 
 # ============================================
-# 7. 配置 Docker 环境（可选）
+# Step 7: Configure Docker Environment (Optional)
 # ============================================
-print_step "步骤 7: 配置 Docker 环境"
+print_step "Step 7: Configure Docker Environment"
 
-print_info "配置 Docker 使用 Minikube 的 Docker 守护进程..."
-print_info "运行以下命令使用 Minikube 的 Docker:"
+print_info "Configure Docker to use Minikube's Docker daemon..."
+print_info "Run the following command to use Minikube's Docker:"
 print_info "  eval \$(minikube docker-env)"
 
 # ============================================
-# 验证安装
+# Verify Installation
 # ============================================
-print_step "验证安装"
+print_step "Verify Installation"
 
-print_info "集群信息:"
+print_info "Cluster information:"
 kubectl cluster-info
 
-print_info "\n节点状态:"
+print_info "\nNode status:"
 kubectl get nodes -o wide
 
 print_info "\nIngress Controller:"
 kubectl get pods -n ingress-nginx
 
-print_info "\nMinikube 插件:"
+print_info "\nMinikube addons:"
 minikube addons list | grep enabled
 
 print_info "\nMinikube IP:"
@@ -208,24 +208,23 @@ MINIKUBE_IP=$(minikube ip)
 echo $MINIKUBE_IP
 
 # ============================================
-# 完成
+# Completion
 # ============================================
-print_step "安装完成！"
+print_step "Installation Complete!"
 
-print_info "\n✅ K8s 集群已就绪！"
-print_info "\n常用命令:"
-echo "  minikube status        # 查看集群状态"
-echo "  minikube dashboard     # 打开仪表板"
-echo "  minikube stop          # 停止集群"
-echo "  minikube start         # 启动集群"
-echo "  minikube delete        # 删除集群"
-echo "  kubectl get nodes      # 查看节点"
-echo "  eval \$(minikube docker-env)  # 使用 Minikube 的 Docker"
+print_info "\n✅ K8s cluster is ready!"
+print_info "\nCommon commands:"
+echo "  minikube status        # Check cluster status"
+echo "  minikube dashboard     # Open dashboard"
+echo "  minikube stop          # Stop cluster"
+echo "  minikube start         # Start cluster"
+echo "  minikube delete        # Delete cluster"
+echo "  kubectl get nodes      # List nodes"
+echo "  eval \$(minikube docker-env)  # Use Minikube's Docker"
 
-print_info "\n下一步:"
-print_info "  1. 配置 Docker 环境: eval \$(minikube docker-env)"
-print_info "  2. 构建 Docker 镜像"
-print_info "  3. 运行部署脚本: ./scripts/deploy.sh"
+print_info "\nNext steps:"
+print_info "  1. Configure Docker environment: eval \$(minikube docker-env)"
+print_info "  2. Build Docker images"
+print_info "  3. Run deployment script: ./scripts/deploy.sh"
 
-print_info "\n🎉 准备就绪！可以开始部署应用了！"
-
+print_info "\n🎉 Ready to deploy applications!"

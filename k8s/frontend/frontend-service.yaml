@@ -1,6 +1,7 @@
 # ============================================
 # Frontend Service
 # 前端服务（NodePort 暴露到外部）
+# Frontend service (NodePort exposed externally)
 # ============================================
 apiVersion: v1
 kind: Service
@@ -19,7 +20,6 @@ spec:
   - name: http
     port: 80
     targetPort: 80
-    nodePort: 30080  # 通过节点的 30080 端口访问
+    nodePort: 30080  # 通过节点的 30080 端口访问 / Access via node port 30080
     protocol: TCP
   sessionAffinity: None
-

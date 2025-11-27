@@ -1,6 +1,7 @@
 # ============================================
 # PostgreSQL PersistentVolume
 # 持久化存储卷（用于存储数据库数据）
+# Persistent storage volume (for database data)
 # ============================================
 apiVersion: v1
 kind: PersistentVolume
@@ -18,6 +19,6 @@ spec:
   storageClassName: manual
   hostPath:
     # 注意：生产环境应使用 NFS、Ceph 或云存储
+    # Note: Production should use NFS, Ceph or cloud storage
     path: /mnt/data/postgres
     type: DirectoryOrCreate
-

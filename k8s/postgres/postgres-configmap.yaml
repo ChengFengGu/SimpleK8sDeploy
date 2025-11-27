@@ -1,6 +1,6 @@
 # ============================================
 # PostgreSQL ConfigMap
-# 存储数据库配置信息
+# 存储数据库配置信息 / Store database configuration
 # ============================================
 apiVersion: v1
 kind: ConfigMap
@@ -15,19 +15,19 @@ data:
   POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
   TZ: Asia/Shanghai
   
-  # PostgreSQL 配置优化
+  # PostgreSQL 配置优化 / PostgreSQL configuration optimization
   postgresql.conf: |
-    # 连接设置
+    # 连接设置 / Connection settings
     max_connections = 200
     superuser_reserved_connections = 3
     
-    # 内存设置
+    # 内存设置 / Memory settings
     shared_buffers = 256MB
     effective_cache_size = 1GB
     work_mem = 4MB
     maintenance_work_mem = 64MB
     
-    # 日志设置
+    # 日志设置 / Logging settings
     logging_collector = on
     log_directory = 'log'
     log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
@@ -35,10 +35,9 @@ data:
     log_duration = on
     log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
     
-    # 性能设置
+    # 性能设置 / Performance settings
     checkpoint_completion_target = 0.9
     wal_buffers = 16MB
     
-    # 自动清理
+    # 自动清理 / Auto vacuum
     autovacuum = on
-

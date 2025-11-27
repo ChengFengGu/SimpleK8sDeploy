@@ -1,6 +1,7 @@
 # ============================================
-# Namespace 配置
+# Namespace 配置 / Namespace Configuration
 # 为登录系统创建独立的命名空间
+# Create isolated namespace for login system
 # ============================================
 apiVersion: v1
 kind: Namespace
@@ -10,4 +11,3 @@ metadata:
     name: login-system
     app: login-system
     environment: development
-

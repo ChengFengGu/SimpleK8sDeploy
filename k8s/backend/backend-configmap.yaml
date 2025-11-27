@@ -1,6 +1,6 @@
 # ============================================
 # Backend ConfigMap
-# 存储后端配置信息
+# 存储后端配置信息 / Store backend configuration
 # ============================================
 apiVersion: v1
 kind: ConfigMap
@@ -11,23 +11,19 @@ metadata:
     app: backend
     tier: application
 data:
-  # Django 配置
+  # Django 配置 / Django configuration
   DEBUG: "False"
   ALLOWED_HOSTS: "*"
   
-  # 数据库配置
+  # 数据库配置 / Database configuration
   USE_SQLITE: "False"
   DB_NAME: "logindb"
   DB_USER: "postgres"
   DB_HOST: "postgres-service"
   DB_PORT: "5432"
   
-  # CORS 配置
+  # CORS 配置 / CORS configuration
   CORS_ALLOWED_ORIGINS: "http://login.local,http://www.login.local,http://api.login.local"
   
-  # 日志配置
+  # 日志配置 / Logging configuration
   DJANGO_LOG_LEVEL: "INFO"
-  
-  # 时区
-  TZ: "Asia/Shanghai"
-

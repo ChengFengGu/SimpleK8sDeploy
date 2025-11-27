@@ -1,6 +1,6 @@
 # ============================================
 # PostgreSQL Deployment
-# 数据库部署配置
+# 数据库部署配置 / Database deployment configuration
 # ============================================
 apiVersion: apps/v1
 kind: Deployment
@@ -11,13 +11,13 @@ metadata:
     app: postgres
     tier: database
 spec:
-  replicas: 1  # 数据库通常单实例，如需高可用请使用 StatefulSet
+  replicas: 1  # 数据库通常单实例，如需高可用请使用 StatefulSet / Database typically single instance, use StatefulSet for HA
   selector:
     matchLabels:
       app: postgres
       tier: database
   strategy:
-    type: Recreate  # 数据库使用 Recreate 策略
+    type: Recreate  # 数据库使用 Recreate 策略 / Database uses Recreate strategy
   template:
     metadata:
       labels:
@@ -35,7 +35,7 @@ spec:
           protocol: TCP
         
         env:
-        # 从 ConfigMap 读取
+        # 从 ConfigMap 读取 / Read from ConfigMap
         - name: POSTGRES_DB
           valueFrom:
             configMapKeyRef:
@@ -54,7 +54,7 @@ spec:
               name: postgres-config
               key: TZ
         
-        # 从 Secret 读取
+        # 从 Secret 读取 / Read from Secret
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
@@ -67,7 +67,7 @@ spec:
               name: postgres-secret
               key: POSTGRES_PASSWORD
         
-        # 数据目录
+        # 数据目录 / Data directory
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         
@@ -75,7 +75,7 @@ spec:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
         
-        # 资源限制
+        # 资源限制 / Resource limits
         resources:
           requests:
             memory: "256Mi"
@@ -84,7 +84,7 @@ spec:
             memory: "1Gi"
             cpu: "1000m"
         
-        # 健康检查
+        # 健康检查 / Health checks
         livenessProbe:
           exec:
             command:
@@ -112,7 +112,6 @@ spec:
         persistentVolumeClaim:
           claimName: postgres-pvc
       
-      # 节点选择（可选）
+      # 节点选择（可选）/ Node selector (optional)
       # nodeSelector:
       #   disktype: ssd
-

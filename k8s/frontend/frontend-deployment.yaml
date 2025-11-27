@@ -1,6 +1,6 @@
 # ============================================
 # Frontend Deployment
-# Vue3 前端部署配置
+# Vue3 前端部署配置 / Vue3 frontend deployment configuration
 # ============================================
 apiVersion: apps/v1
 kind: Deployment
@@ -11,7 +11,7 @@ metadata:
     app: frontend
     tier: frontend
 spec:
-  replicas: 2  # 2个副本
+  replicas: 2  # 2个副本 / 2 replicas
   selector:
     matchLabels:
       app: frontend
@@ -37,13 +37,13 @@ spec:
           name: http
           protocol: TCP
         
-        # 挂载 Nginx 配置
+        # 挂载 Nginx 配置 / Mount Nginx configuration
         volumeMounts:
         - name: nginx-config
           mountPath: /etc/nginx/conf.d/default.conf
           subPath: nginx.conf
         
-        # 资源限制
+        # 资源限制 / Resource limits
         resources:
           requests:
             memory: "64Mi"
@@ -52,7 +52,7 @@ spec:
             memory: "128Mi"
             cpu: "200m"
         
-        # 存活探针
+        # 存活探针 / Liveness probe
         livenessProbe:
           httpGet:
             path: /
@@ -63,7 +63,7 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
         
-        # 就绪探针
+        # 就绪探针 / Readiness probe
         readinessProbe:
           httpGet:
             path: /
@@ -81,4 +81,3 @@ spec:
           items:
           - key: nginx.conf
             path: nginx.conf
-

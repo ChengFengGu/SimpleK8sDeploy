@@ -1,6 +1,6 @@
 # ============================================
 # Backend Deployment
-# Django 后端部署配置
+# Django 后端部署配置 / Django backend deployment configuration
 # ============================================
 apiVersion: apps/v1
 kind: Deployment
@@ -11,7 +11,7 @@ metadata:
     app: backend
     tier: application
 spec:
-  replicas: 3  # 3个副本实现高可用
+  replicas: 3  # 3个副本实现高可用 / 3 replicas for high availability
   selector:
     matchLabels:
       app: backend
@@ -38,7 +38,7 @@ spec:
           protocol: TCP
         
         env:
-        # 从 ConfigMap 读取
+        # 从 ConfigMap 读取 / Read from ConfigMap
         - name: DEBUG
           valueFrom:
             configMapKeyRef:
@@ -99,7 +99,7 @@ spec:
               name: backend-config
               key: TZ
         
-        # 从 Secret 读取
+        # 从 Secret 读取 / Read from Secret
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
@@ -112,7 +112,7 @@ spec:
               name: backend-secret
               key: DB_PASSWORD
         
-        # 资源限制
+        # 资源限制 / Resource limits
         resources:
           requests:
             memory: "256Mi"
@@ -121,7 +121,7 @@ spec:
             memory: "512Mi"
             cpu: "500m"
         
-        # 存活探针
+        # 存活探针 / Liveness probe
         livenessProbe:
           httpGet:
             path: /api/health/
@@ -132,7 +132,7 @@ spec:
           timeoutSeconds: 5
           failureThreshold: 3
         
-        # 就绪探针
+        # 就绪探针 / Readiness probe
         readinessProbe:
           httpGet:
             path: /api/health/
@@ -144,6 +144,7 @@ spec:
           failureThreshold: 3
       
       # 初始化容器 - 等待数据库就绪
+      # Init container - wait for database ready
       initContainers:
       - name: wait-for-postgres
         image: busybox:1.35
@@ -151,10 +152,9 @@ spec:
         - 'sh'
         - '-c'
         - |
-          echo "等待 PostgreSQL 就绪..."
+          echo "等待 PostgreSQL 就绪... / Waiting for PostgreSQL to be ready..."
           until nc -z postgres-service 5432; do
-            echo "PostgreSQL 未就绪，等待中..."
+            echo "PostgreSQL 未就绪，等待中... / PostgreSQL not ready, waiting..."
             sleep 2
           done
-          echo "PostgreSQL 已就绪！"
-
+          echo "PostgreSQL 已就绪！/ PostgreSQL is ready!"
