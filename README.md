@@ -72,7 +72,7 @@ kubectl port-forward -n login-system service/frontend-service 8080:80
 # 浏览器打开: http://localhost:8080
 ```
 
-**详细部署步骤**: 请查看 **[📘 快速部署指南](./快速部署指南.md)**
+**详细部署步骤**: 请查看 **[📘 部署指南](./部署指南.md)**
 
 ---
 
@@ -115,9 +115,11 @@ kubectl port-forward -n login-system service/frontend-service 8080:80
 ├── scripts/                 # 部署脚本
 │   ├── install-k8s-cn.sh   # K8s 安装 (国内镜像)
 │   ├── deploy.sh           # 一键部署
-│   └── cleanup.sh          # 清理脚本
+│   ├── cleanup.sh          # 清理脚本
+│   └── setup-windows-access.sh  # Windows 访问配置
 │
-└── 快速部署指南.md          # 👈 主要文档
+├── 部署指南.md              # 👈 主要部署文档
+└── 技术文档.md              # 技术架构和 Bug 记录
 ```
 
 ---
@@ -155,9 +157,8 @@ kubectl port-forward -n login-system service/frontend-service 8080:80
 
 | 文档 | 说明 |
 |------|------|
-| **[📘 快速部署指南](./快速部署指南.md)** | ⭐ 主要文档，5分钟快速部署 |
-| [VUE3_NGINX_CONFIG.md](./VUE3_NGINX_CONFIG.md) | Vue3 + Nginx 配置详解 |
-| [BUGFIX.md](./BUGFIX.md) | Bug 修复记录 |
+| **[📘 部署指南](./部署指南.md)** | ⭐ 完整部署文档，包含所有访问方式和故障排查 |
+| [📖 技术文档](./技术文档.md) | 技术架构、优化方案、Bug 修复记录 |
 
 ---
 
@@ -253,7 +254,7 @@ kubectl port-forward -n login-system service/frontend-service 8080:80
 3. **无法访问**: 使用 `kubectl port-forward` 而不是直接访问 Minikube IP
 4. **数据库连接失败**: 等待 PostgreSQL Pod 完全就绪
 
-详细解决方案: 查看 [快速部署指南 - 常见问题](./快速部署指南.md#常见问题)
+详细解决方案: 查看 [部署指南 - 常见问题](./部署指南.md#常见问题)
 
 ---
 
@@ -297,7 +298,8 @@ kubectl port-forward -n login-system service/frontend-service 8080:80
 
 ## 📞 联系方式
 
-- 项目文档: 查看 `快速部署指南.md`
+- 项目文档: 查看 `部署指南.md`
+- 技术细节: 查看 `技术文档.md`
 - 问题反馈: 提交 Issue
 - 技术交流: 创建 Discussion
 
