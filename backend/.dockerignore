@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# 虚拟环境
+venv/
+env/
+ENV/
+.venv
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# 测试
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Git
+.git/
+.gitignore
+
+# 文档
+README.md
+docs/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# 其他
+*.md
+!requirements.txt
+migrations/
+

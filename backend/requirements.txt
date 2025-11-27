@@ -1,0 +1,22 @@
+# Django 核心
+Django==4.2.8
+djangorestframework==3.14.0
+
+# JWT 认证
+djangorestframework-simplejwt==5.3.1
+
+# 数据库驱动
+psycopg2-binary==2.9.9
+
+# CORS 支持
+django-cors-headers==4.3.1
+
+# 环境变量管理
+python-dotenv==1.0.0
+
+# 生产服务器
+gunicorn==21.2.0
+
+# 工具库
+python-decouple==3.8
+
