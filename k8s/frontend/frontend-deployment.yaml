@@ -1,0 +1,84 @@
+# ============================================
+# Frontend Deployment
+# Vue3 前端部署配置
+# ============================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  namespace: login-system
+  labels:
+    app: frontend
+    tier: frontend
+spec:
+  replicas: 2  # 2个副本
+  selector:
+    matchLabels:
+      app: frontend
+      tier: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: frontend
+        tier: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: login-frontend:latest
+        imagePullPolicy: IfNotPresent
+        
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        
+        # 挂载 Nginx 配置
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: nginx.conf
+        
+        # 资源限制
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        
+        # 存活探针
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        # 就绪探针
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+      
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: frontend-config
+          items:
+          - key: nginx.conf
+            path: nginx.conf
+

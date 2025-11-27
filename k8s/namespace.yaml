@@ -1,0 +1,13 @@
+# ============================================
+# Namespace 配置
+# 为登录系统创建独立的命名空间
+# ============================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: login-system
+  labels:
+    name: login-system
+    app: login-system
+    environment: development
+

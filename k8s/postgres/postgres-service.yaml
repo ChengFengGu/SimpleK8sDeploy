@@ -1,0 +1,24 @@
+# ============================================
+# PostgreSQL Service
+# 数据库服务（仅集群内部访问）
+# ============================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: login-system
+  labels:
+    app: postgres
+    tier: database
+spec:
+  type: ClusterIP  # 仅集群内部访问
+  selector:
+    app: postgres
+    tier: database
+  ports:
+  - name: postgres
+    port: 5432
+    targetPort: 5432
+    protocol: TCP
+  sessionAffinity: None
+

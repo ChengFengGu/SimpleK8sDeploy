@@ -1,0 +1,24 @@
+# ============================================
+# Backend Service
+# 后端服务（集群内部访问）
+# ============================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: login-system
+  labels:
+    app: backend
+    tier: application
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+    tier: application
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  sessionAffinity: None
+
