@@ -148,7 +148,8 @@ const handleRegister = async () => {
     const response = await register({
       username: formData.username,
       email: formData.email,
-      password: formData.password
+      password: formData.password,
+      password2: formData.confirmPassword
     })
 
     console.log('✅ 注册成功:', response)
@@ -162,6 +163,8 @@ const handleRegister = async () => {
     }, 3000)
   } catch (error) {
     console.error('❌ 注册失败:', error)
+    console.error('错误响应:', error.response)
+    console.error('错误数据:', error.response?.data)
 
     // 显示错误信息
     if (error.response?.data?.username) {
@@ -175,7 +178,16 @@ const handleRegister = async () => {
     } else if (error.response?.data?.message) {
       errorMessage.value = error.response.data.message
     } else {
-      errorMessage.value = '注册失败，请稍后重试'
+      // 显示所有错误字段
+      const errors = error.response?.data
+      if (errors && typeof errors === 'object') {
+        const errorMessages = Object.entries(errors).map(([key, value]) => {
+          return `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
+        }).join('; ')
+        errorMessage.value = errorMessages || '注册失败，请稍后重试'
+      } else {
+        errorMessage.value = '注册失败，请稍后重试'
+      }
     }
   } finally {
     loading.value = false

@@ -20,9 +20,10 @@ export default defineConfig({
     // API 代理配置（开发环境）
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:8000',
+        target: process.env.VITE_API_URL || 'http://localhost:8001',
         changeOrigin: true,
-        secure: false
+        secure: false,
+        rewrite: (path) => path // 保持 /api 路径
       }
     }
   },
